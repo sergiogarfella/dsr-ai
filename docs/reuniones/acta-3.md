@@ -1,6 +1,6 @@
 # Actas de Reunión Proyecto IA
 
-## *Acta de Reunión 2: Desglose de Fases y Ciclo de Datos*
+## *Acta de Reunión 3: Desglose de Fases y Ciclo de Datos*
 
 **Fecha**: 10/03/2026
 
@@ -16,18 +16,21 @@
 * Desarrollo de fases AED (Analisis Exploratorio de Datos)
 * Comienzo de fase 1 (Accesibilidad y preparación de los datos)
 
-**Desarrollo de la reunión:**  
-Apartir de los dataset descargados previamente hemos empezamos con su limpieza y filtrado
+**Desarrollo de la reunión:**
 
-**Contexto de los datos**
-Los dataset en su mayoria recopilan reviews de peliculas de paginas como IMDb y Rotten Tomatoes. Estos dataset al provernir de trabajos realizados en universidades ya presentaban cierto trato.
+En general, no hemos conseguido definir un guión claro sobre las tareas. Hemos acordado durante los próximos 3 días seguir en comunicación por Whatsapp para hacer propuestas de mejora. Por tanto haremos otro acta con las decisiones finales.
 
-La mayoria de dataset estan ordenados con dos conjuntos de datos pos y neg, haciendo referencia a comentarios positivos y negativo. En esta sesión nos dedicaremos exclusivamente a:
+Planificación **provisional** incial de las tareas:
 
-- Corrección de errores minimos
-- Seleccion de datasets que vamos a usar
-- Combinacion y su manipulacion
+- Abrir nuevo documento en Gamma para editar en conjunto el entregable.
 
-Estamos actualizando toda la información al directorio /docs/analisis-exploratorio
+- Analizar y comparar datasets
 
+- Valorar si usar los datasets descargados del repositorio o si importarlos desde una libería en Python. (valoraremos en GitHub)
+
+- Completar tarea entregable 10 Mar Práctica 6
+
+- (Si hay tiempo) Comenzar el AED
+
+Todas las tareas serán issues de GitHub, donde  se asignará a cada uno y se cerrará cuando finalice. Además en la tarea de PoliformaT explicaremos las tareas ya completadas.
 
