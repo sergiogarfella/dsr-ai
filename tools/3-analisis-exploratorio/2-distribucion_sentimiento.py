@@ -57,11 +57,19 @@ plt.legend(title='Sentimiento', fontsize=10, title_fontsize=11)
 y_max = df_completo.groupby(['dataset', 'sentimiento']).size().max()
 plt.ylim(0, y_max * 1.15)
 
-# Añadir valores sobre las barras
-for p in ax.patches:
+# Calcular totales por dataset para los porcentajes
+total_por_dataset = df_completo['dataset'].value_counts()
+num_datasets = len(datasets)
+
+# Añadir valores y porcentajes sobre las barras
+for i, p in enumerate(ax.patches):
     height = p.get_height()
     if height > 0:
-        ax.annotate(f'{int(height):,}', (p.get_x() + p.get_width() / 2., height), ha='center', va='bottom', fontsize=10, fontweight='medium')
+        ds_name = datasets[i % num_datasets]
+        total = total_por_dataset[ds_name]
+        porcentaje = (height / total) * 100
+        texto = f'{int(height):,}\n({porcentaje:.1f}%)'
+        ax.annotate(texto, (p.get_x() + p.get_width() / 2., height), ha='center', va='bottom', fontsize=9, fontweight='medium')
 
 plt.tight_layout()
 ruta_grafico = os.path.join(dir_graficos, '1-distribucion_sentimiento.png')
