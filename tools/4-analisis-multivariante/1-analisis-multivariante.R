@@ -4,8 +4,7 @@ library(GGally)
 library(car)
 library(lmtest)
 
-dua <- read_csv("Git-repos/dsr-ai/datasets/dataset_unificado_analisis.csv")
-
+dua <- read_csv("/home/acust/Proyectos/dsr-playground/dataset_unificado_analisis.csv")
 
 # Analisis multivariante
 library(tidyverse)
@@ -24,9 +23,14 @@ stan_box <-ggplot(data = stan, aes(x=sentimiento, y= longitud, fill=sentimiento)
 review_densi <- ggplot(data =review, aes(x=longitud, fill=sentimiento)) + geom_density(alpha = 0.35) + scale_fill_manual(values = c("pos"="#2E86AB", "neg"="#A23B72"))+ scale_color_manual(values = c("pos"="#2E86AB", "neg"="#A23B72")) + labs(title = "Review_polarity", x= "Longitud", y="Sentimiento", fill="Grupo") + theme_minimal() 
 review_box <- ggplot(data = review, aes(x=sentimiento, y= longitud, fill=sentimiento)) + geom_boxplot(fill= c("#A23B72","#2E86AB")) + labs(title = "Review_polarity", x= "Sentimiento", y="Longitud") + theme_minimal() + theme(legend.position = "none")
 
-densidad_conjunta <-(amd_densi+amd_box)/(stan_densi+stan_box)/(review_densi+review_box) + plot_annotation(title = "Comparación de distribuciones", theme = theme(plot.title = element_text(hjust = 0.5, size = 16))) & theme(plot.margin = margin(10, 10, 10, 10), dth=10) 
+#conjunto
+conjun_densi <-ggplot(data =dua, aes(x=longitud, fill=sentimiento)) + geom_density(alpha = 0.35) + scale_fill_manual(values = c("pos"="#2E86AB", "neg"="#A23B72"))+ scale_color_manual(values = c("pos"="#2E86AB", "neg"="#A23B72")) + labs(title = "Unificado", x= "Longitud", y="Sentimiento", fill="Grupo") + theme_minimal()
+conjun_box <-ggplot(data = dua, aes(x=sentimiento, y= longitud, fill=sentimiento)) + geom_boxplot(fill= c("#A23B72","#2E86AB")) + labs(title = "Unificado", x= "Sentimiento", y="Longitud") + theme_minimal() + theme(legend.position = "none")
 
-ggsave("4-distribuccion_densidad.png", plot = densidad_conjunta, width = 10, height = 10, dpi = 300 )
+densidad_conjunta <- (amd_densi+amd_box)/(stan_densi+stan_box)/(review_densi+review_box)/(conjun_densi+conjun_box) + plot_annotation(title = "Comparación de distribuciones", theme = theme(plot.title = element_text(hjust = 0.5, size = 16))) & theme(plot.margin = margin(10, 10, 10, 10)) 
+
+
+ggsave("4-grafico_densidad.png", plot=densidad_conjunta, height = 10, width = 10)
 
 # test ManWhitten U 
 wilcox.test(longitud ~ sentimiento, data = amd, alternative = "two.sided", conf.int = TRUE, exact = FALSE)  
@@ -88,13 +92,23 @@ vocab <- ggplot(data=dua, aes(x=dataset, y=vocabulario, fill = dataset )) + geom
 #Numero de palabras
 num_c <- ggplot(data=dua, aes(x=dataset, y=num_caracteres, fill = dataset )) + geom_violin(width = 0.7, scale = "width", trim = TRUE, alpha = 0.8) + labs(title = "Numero de palabras por dataset")  + theme_minimal() + theme(legend.position = "none")
 
-ggsave(filename = "5-violin_plots.png", plot = long/vocab/num_c, width = 10, height = 10, dpi = 300,)
-
 
 # Matriz de correlacion
-
+library(tidyverse)
+library(corrplot)
 numeric <- dua %>% select(where(is.numeric))
 
-cor.test(dua$longitud, dua$vocabulario, method = "spearman")
-cor.test(dua$longitud, dua$num_caracteres, method = "spearman")
-cor.test(dua$vocabulario, dua$num_caracteres, method = "spearman")
+matriz_cor <- cor(numeric)
+
+png("7-matriz_correlacion.png", width = 10, height = 10, units = "in", res = 300)
+
+corrplot(matriz_cor, 
+         method = "square",      # circle, square, ellipse, number, color
+         type = "lower",         # full, upper, lower
+         tl.col = "black",       # color de labels
+         tl.srt = 45,            # rotación de labels
+         addCoef.col = "white",  # agregar coeficientes
+         number.cex = 0.7,       # tamaño de números
+         tl.cex = 0.9,)           # tamaño de labels
+
+dev.off()
