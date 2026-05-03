@@ -2,7 +2,6 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
-import re
 
 print("--- DISTRIBUCIÓN DE LONGITUD ---\n")
 
@@ -23,20 +22,10 @@ os.makedirs(dir_graficos, exist_ok=True)
 print("Leyendo dataset y calculando métricas...")
 df = pd.read_csv(ruta_csv)
 
-# El dataset de análisis ya tiene 'longitud' (palabras) y 'num_caracteres'. 
-# Calculamos 'num_frases' (aproximación separando por signos de puntuación finales).
-def contar_frases(texto):
-    texto = str(texto)
-    # Dividir por '.', '!', '?' ignorando strings vacíos
-    frases = [s for s in re.split(r'[.!?]+', texto) if s.strip()]
-    return max(1, len(frases))
-
-df['num_frases'] = df['texto'].apply(contar_frases)
-
 metricas = {
     'longitud': 'Número de Palabras',
     'num_caracteres': 'Número de Caracteres',
-    'num_frases': 'Número de Frases'
+    'vocabulario': 'Vocabulario'
 }
 
 # 1. Estadísticas Descriptivas en Consola
@@ -71,7 +60,7 @@ orden_datasets = df['dataset'].unique().tolist() + ['Unificado']
 nombres_archivos = {
     'longitud': '2-distribucion_palabras.png',
     'num_caracteres': '3-distribucion_caracteres.png',
-    'num_frases': '4-distribucion_frases.png'
+    'vocabulario': '4-distribucion_vocabulario.png'
 }
 
 for col, nombre in metricas.items():
