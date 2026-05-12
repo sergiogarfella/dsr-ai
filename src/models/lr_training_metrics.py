@@ -1,5 +1,6 @@
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
 import pickle
+
 with open('data/processed/X_train.pkl', 'rb') as f:
     X_train = pickle.load(f)
 
@@ -12,11 +13,9 @@ with open('data/processed/X_test.pkl', 'rb') as f:
 with open('data/processed/y_test.pkl', 'rb') as f:
     y_test = pickle.load(f)
 
-KNeig = KNeighborsClassifier(n_neighbors=71, leaf_size=30, weights="distance",  algorithm="brute", p=1, metric="cosine")
+logreg = LogisticRegression(penalty="l2", C=0.01, max_iter=1000, solver="saga")
 
-KNeig.fit(X_train, y_train) # Entrenamiento
-
-
+logreg.fit(X_train, y_train) # Entrenamiento
 
 from sklearn.metrics import (
     classification_report,
@@ -29,10 +28,10 @@ from sklearn.metrics import (
 import matplotlib.pyplot as plt
 
 # Predecir
-y_pred = KNeig.predict(X_test)
+y_pred = logreg.predict(X_test)
 
 # Get probabilities for ROC curve and AUC score
-y_proba = KNeig.predict_proba(X_test)[:, 1] # Probability of the positive class
+y_proba = logreg.predict_proba(X_test)[:, 1] # Probability of the positive class
 
 # Métricas en una sola línea
 print(classification_report(y_test, y_pred, target_names=['negativo', 'positivo']))
@@ -47,7 +46,7 @@ print(f"AUC-ROC Score: {auc_roc:.4f}")
 # Matriz de confusión visual
 cm = confusion_matrix(y_test, y_pred)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=['negativo', 'positivo'])
-disp.plot(cmap='Blues')
+disp.plot(cmap='Oranges')
 plt.title('Matriz de Confusión')
 plt.show()
 
@@ -62,4 +61,3 @@ plt.title('Receiver Operating Characteristic (ROC) Curve')
 plt.legend(loc='lower right')
 plt.grid(True)
 plt.show()
-

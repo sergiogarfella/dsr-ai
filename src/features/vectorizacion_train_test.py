@@ -11,7 +11,7 @@ with open('data/processed/tokenized_docs_train_clean.pkl', 'rb') as f:
 
 # Entrenamiento y vectorizacion de documentos usando Doc2Vec
 labeled_data = [TaggedDocument(words=tokenized_docs_train_clean[x], tags=[x]) for x in range(len(tokenized_docs_train_clean))]
-model = Doc2Vec(vector_size=384, window=10, min_count=1, workers=5, epochs=123) # Ajustes de entrenamiento de Doc2Vec
+model = Doc2Vec(vector_size=400, window=5, min_count=2, workers=5, epochs=150, dm=1) # Ajustes de entrenamiento de Doc2Vec
 model.build_vocab(labeled_data)
 model.train(labeled_data, total_examples=model.corpus_count, epochs=model.epochs)
 print("Entrenamiento Doc2Vec finalizado correctamente")
@@ -22,7 +22,7 @@ print("Entrenamiento Doc2Vec finalizado correctamente")
 # Vectorizacion usando el modelo ya entrenado
 # infer_vector se aplica a cada documento individualmente
 X_test = np.array([model.infer_vector(doc) for doc in tokenized_docs_test_clean])
-X_train  = [model.dv[x] for x in range(len(model.dv))]
+X_train  = np.array([model.infer_vector(doc) for doc in tokenized_docs_train_clean])
 
 print("Variable X_test creada correctamente")
 
