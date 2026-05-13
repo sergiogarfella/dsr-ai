@@ -1,0 +1,45 @@
+from .text_clean import CleanText
+from deep_translator import GoogleTranslator
+from gensim.models.doc2vec import Doc2Vec
+import pickle
+
+class Dsr:
+    #Abrir modelos
+    __doc2vec_model = Doc2Vec.load("doc2vec_model") 
+    __knn_model = pickle.load(open("knn_model.pkl", "rb"))
+    __translator = GoogleTranslator(source="auto", target="en")
+
+    def __model_prediction(self, vectorized_text, modelo) -> int:
+        if modelo.lower() == "knn":
+            return Dsr.__knn_model.predict([vectorized_text]), Dsr.__knn_model.predict_proba([vectorized_text]) 
+        else:
+            return Dsr.__lr_model.predict(vectorized_text)
+
+    def __clean_text(self, text:str) -> list: # Limpieza de texto
+        return CleanText.clean_text(text)
+
+    def __vectorize(self, text:str) -> list: # Vectorizacion
+        return Dsr.__doc2vec_model.infer_vector(text)
+
+
+    def predict(self, text:str, modelo="knn"):
+        # Traducir texto 
+        translated_text = Dsr.__translator.translate(text)
+        # Limpiar texto
+        cleaned_text = self.__clean_text(translated_text)
+        # Vectorizar
+        vectorized_text = self.__vectorize(cleaned_text)
+        # Prediccion
+        prediction = self.__model_prediction(vectorized_text, modelo)
+        return prediction                                            
+        
+        
+
+
+if __name__ == '__main__':
+    # Codigo de Prueba
+    dsr = Dsr()
+    texto = "Pues a decir verdad esta pelicula es una pesima idea y tonta no me gusta"
+    sentimiento, probabilidad = dsr.predict(texto)
+    print(sentimiento, probabilidad)
+    
