@@ -1,0 +1,5 @@
+streamlit
+deep-translator
+gensim
+nltk
+scikit-learn

@@ -2,11 +2,14 @@ from .text_clean import CleanText
 from deep_translator import GoogleTranslator
 from gensim.models.doc2vec import Doc2Vec
 import pickle
+import os
+
+_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class Dsr:
     #Abrir modelos
-    __doc2vec_model = Doc2Vec.load("doc2vec_model") 
-    __knn_model = pickle.load(open("knn_model.pkl", "rb"))
+    __doc2vec_model = Doc2Vec.load(os.path.join(_DIR, "doc2vec_model")) 
+    __knn_model = pickle.load(open(os.path.join(_DIR, "knn_model.pkl"), "rb"))
     __translator = GoogleTranslator(source="auto", target="en")
 
     def __model_prediction(self, vectorized_text, modelo) -> int:
