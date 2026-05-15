@@ -1,6 +1,7 @@
-from IPython.utils.text import string
+import string
 import pandas as pd
 import re
+import html
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer
@@ -18,7 +19,17 @@ neg_train = df[(df["sentimiento"]=="neg") & (df["split"]=="train")].sample(n=500
 df_balanced = pd.concat([pos_train, neg_train]).sample(frac=1, random_state=42).reset_index(drop=True)
 
 
-lemmatizer = WordNetLemmatizer()
+# Unicode Emoticones
+EMOJI_PATTERN = re.compile(
+    "["
+    u"\U0001F600-\U0001F64F"   # emoticons
+    u"\U0001F300-\U0001F5FF"   # símbolos y pictogramas
+    u"\U0001F680-\U0001F9FF"   # transport, misc symbols
+    u"\U00002600-\U000027BF"   # símbolos varios
+    "]+",
+    flags=re.UNICODE
+)
+
 
 def get_wordnet_pos(treebank_tag): # Devuelve el significado del diccionario de wordnet
     """Convierte el POS tag de NLTK al formato de WordNet."""
@@ -33,21 +44,29 @@ def get_wordnet_pos(treebank_tag): # Devuelve el significado del diccionario de 
 
 
 
-def clean_docs(df: pd.DataFrame):
+def clean_docs(df: pd.DataFrame) -> list:
+  lemmatizer = WordNetLemmatizer()
 
-  # conversion de documentos a minusculas
-  raw_docs = [df["texto"][x].lower() for x in range(len(df["texto"]))]
-  
-  # Eliminar etiquetas HTML (<br/>, etc.), URLs y números
+  # Eliminacion de caracteres especiales. urls, htmls, emojis, etc.
   cleaned_docs = []
-  for text in raw_docs:
-    text = re.sub(r'<[^>]+>', ' ', text)        
-    text = re.sub(r'http\S+|www\.\S+', ' ', text)  
-    text = re.sub(r'\d+', ' ', text)            
+  for text in df["texto"]:
+    text = html.unescape(text) 
+    text = re.sub(r'<[^>]+>', ' ', text)
+    text = re.sub(r'http\S+|www\.\S+', ' ', text)
+    text = EMOJI_PATTERN.sub(' ', text)
+    text = re.sub(r'(.)\1{2,}', r'\1\1', text)
+    text = re.sub(r'\s+', ' ', text).strip()
     cleaned_docs.append(text)
+    
+  # conversion de documentos a minusculas
+  raw_docs = [cleaned_docs[x].lower() for x in range(len(cleaned_docs))]
+  
+  # Eliminar numeros
+  raw_docs = [re.sub(r'\d+', ' ', doc) for doc in raw_docs]
+  raw_docs = [re.sub(r'\s+', ' ', doc).strip() for doc in raw_docs]
   
   # Tokenizacion
-  tokenize_docs = [word_tokenize(doc) for doc in cleaned_docs]
+  tokenize_docs = [word_tokenize(doc) for doc in raw_docs]
   
   # Remover puntuacion
   regex = re.compile('[%s]' % re.escape(string.punctuation))
@@ -62,6 +81,8 @@ def clean_docs(df: pd.DataFrame):
 
   # Remover stopwords
   stop_words = set(stopwords.words('english'))
+  keep = {"no", "not", "nor", "never", "neither", "very", "too", "but", "however", "although"}
+  stop_words -= keep
   tokenized_docs_no_stopwords = []
   for doc in tokenize_docs_no_punctuation:
     new_term_vector = []
@@ -88,16 +109,13 @@ df = pd.read_csv("datasets/dataset_unificado_corregido.csv")
 pos_train = df[(df["sentimiento"]=="pos") & (df["split"]=="train")].sample(n=5000, random_state=42)
 neg_train = df[(df["sentimiento"]=="neg") & (df["split"]=="train")].sample(n=5000, random_state=42)
 df_balanced = pd.concat([pos_train, neg_train]).sample(frac=1, random_state=42).reset_index(drop=True)
+tokenized_docs_train_clean = clean_docs(df_balanced)
 
 
 # Separar datos de test
 pos_test = df[(df["sentimiento"]=="pos") & (df["split"]=="test")].sample(n=2500, random_state=42)
 neg_test = df[(df["sentimiento"]=="neg") & (df["split"]=="test")].sample(n=2500, random_state=42)
 df_test = pd.concat([pos_test, neg_test]).sample(frac=1, random_state=42).reset_index(drop=True)
-
-
-
-tokenized_docs_train_clean = clean_docs(df_balanced)
 tokenized_docs_test_clean = clean_docs(df_test)
 
 

@@ -16,6 +16,11 @@ KNeig = KNeighborsClassifier(n_neighbors=71, leaf_size=30, weights="distance",  
 
 KNeig.fit(X_train, y_train) # Entrenamiento
 
+# Guardar modelo KNN en el paquete dsr
+with open('proyect-package/dsr/knn_model.pkl', 'wb') as f:
+    pickle.dump(KNeig, f)
+print("Modelo KNN guardado en proyect-package/dsr/knn_model.pkl")
+
 
 
 from sklearn.metrics import (

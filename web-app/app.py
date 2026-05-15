@@ -10,7 +10,7 @@ from datetime import datetime
 
 # Añadir el paquete del proyecto al path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'proyect-package'))
-from dsr.dsr import Dsr
+from dsr import Dsr
 
 # ── Configuración de página ──
 st.set_page_config(
@@ -77,7 +77,7 @@ with tab_analisis:
             st.info("Este modelo aún no está disponible. Selecciona otro.")
         else:
             with st.spinner("Analizando..."):
-                prediccion, probabilidades = st.session_state.dsr.predict(resena.strip(), modelo=modelo_id)
+                prediccion, probabilidades = st.session_state.dsr.predict(resena, modelo=modelo_id)
 
                 es_positivo = prediccion[0] == 1
                 prob_pos = probabilidades[0][1] * 100

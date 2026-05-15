@@ -11,20 +11,23 @@ class Dsr:
     __doc2vec_model = Doc2Vec.load(os.path.join(_DIR, "doc2vec_model")) 
     __knn_model = pickle.load(open(os.path.join(_DIR, "knn_model.pkl"), "rb"))
     __translator = GoogleTranslator(source="auto", target="en")
-
+    
+    
     def __model_prediction(self, vectorized_text, modelo) -> int:
         if modelo.lower() == "knn":
             return Dsr.__knn_model.predict([vectorized_text]), Dsr.__knn_model.predict_proba([vectorized_text]) 
         else:
             return Dsr.__lr_model.predict(vectorized_text)
-
+    
+    
     def __clean_text(self, text:str) -> list: # Limpieza de texto
         return CleanText.clean_text(text)
-
+    
+    
     def __vectorize(self, text:str) -> list: # Vectorizacion
         return Dsr.__doc2vec_model.infer_vector(text)
 
-
+    
     def predict(self, text:str, modelo="knn"):
         # Traducir texto 
         translated_text = Dsr.__translator.translate(text)
@@ -41,8 +44,6 @@ class Dsr:
 
 if __name__ == '__main__':
     # Codigo de Prueba
-    dsr = Dsr()
     texto = "Pues a decir verdad esta pelicula es una pesima idea y tonta no me gusta"
-    sentimiento, probabilidad = dsr.predict(texto)
-    print(sentimiento, probabilidad)
+    print(Dsr.predict(texto))
     
