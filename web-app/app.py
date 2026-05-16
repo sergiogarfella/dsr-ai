@@ -167,11 +167,10 @@ resena = st.text_area(
 )
 
 # ── MODELOS ACTUALIZADOS ──
-# Si al darle a "Regresión Logística" da error, cambia "logistic" por "lr" 
-# o revisa cómo se llama en vuestro archivo dsr.py
+# Modificado según el aviso: el modelo de regresión se llama lr_model.pkl
 MODELOS = {
     "KNN (K-Nearest Neighbors)": "knn",
-    "Regresión Logística": "logistic", 
+    "Regresión Logística": "lr_model", 
 }
 
 col_modelo, col_boton = st.columns([3, 1.5], gap="large")
@@ -254,7 +253,7 @@ if st.session_state.historial:
         emoji_hist = "😊" if r["sentimiento"] == "POSITIVO" else "😞"
         with st.expander(f'{emoji_hist} {r["sentimiento"]} — {r["confianza"]:.1f}% — {r["timestamp"]}'):
             st.write(r["texto"])
-            st.caption(f'Modelo: **{r["modelo"]}**  |  +{r["prob_positivo"]:.1f}%  /  -{r["prob_negativo"]:.1f}%')
+            st.caption(f'Modelo: **{r["modelo"]}** |  +{r["prob_positivo"]:.1f}%  /  -{r["prob_negativo"]:.1f}%')
 
 st.divider()
 with st.expander("Acerca de DSR-AI"):
