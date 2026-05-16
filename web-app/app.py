@@ -204,7 +204,7 @@ if analizar:
             else:
                 st.error(f"**{emoji} Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
 
-            st.progress(confianza / 100)
+            st.progress(float(confianza / 100))
             st.caption(f"Positivo: {prob_pos:.1f}%  |  Negativo: {prob_neg:.1f}%")
 
             st.session_state.historial.insert(0, {
