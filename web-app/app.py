@@ -1,6 +1,6 @@
 """
-DSR-AI — Interfaz de Análisis de Sentimiento en Reseñas (Estilo Gemini)
-Proyecto I. Introducción a la IA — UPV
+DSR-AI — Interfaz de Análisis de Sentimiento en Reseñas
+Proyecto de la UPV
 """
 
 import streamlit as st
@@ -11,231 +11,100 @@ from datetime import datetime
 # Añadir el paquete del proyecto al path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from dsr import Dsr
+from utils import load_css
 
-# ── Configuración de página ──
-st.set_page_config(
-    page_title="DSR-AI | Análisis de Sentimiento",
-    layout="centered",
-    initial_sidebar_state="collapsed"
-)
-
-# ── CSS: Estilo Gemini ──
-st.markdown("""
-<style>
-    /* Fondo principal oscuro tipo Gemini */
-    .stApp {
-        background-color: #131314;
-        color: #e3e3e3;
-    }
-
-    /* Ocultar elementos nativos de Streamlit */
-    #MainMenu, footer, header { visibility: hidden; }
-    .stApp > header { background-color: rgba(19, 19, 20, 0.8); backdrop-filter: blur(10px); }
-    
-    /* Tipografía general */
-    html, body, [class*="css"] { font-family: 'Google Sans', 'Inter', sans-serif; }
-    
-    /* Contenedor principal centrado */
-    .main .block-container {
-        max-width: 750px;
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-    }
-
-    /* EL RECUADRO DE TEXTO */
-    div[data-testid="stTextArea"] {
-        background-color: #1e1f20 !important;
-        border: 1px solid #3c4043 !important;
-        border-radius: 24px !important;
-        padding: 15px 20px !important;
-        transition: all 0.2s ease;
-    }
-    div[data-testid="stTextArea"]:focus-within {
-        border-color: #8ab4f8 !important;
-        box-shadow: 0 0 0 1px #8ab4f8;
-    }
-    div[data-testid="stTextArea"] textarea {
-        background-color: transparent !important;
-        color: #e3e3e3 !important;
-        font-size: 16px;
-    }
-    div[data-testid="stTextArea"] textarea::placeholder {
-        color: #9aa0a6 !important;
-    }
-
-    /* SELECTOR DE MODELO */
-    div[data-testid="stSelectbox"] {
-        background-color: #303134;
-        border-radius: 20px;
-        padding: 4px;
-        margin-bottom: 10px;
-    }
-    div[data-testid="stSelectbox"] label {
-        display: none;
-    }
-    /* Forzar que el texto sea blanco y no se corte */
-    .stSelectbox div[data-baseweb="select"] {
-        background-color: transparent !important;
-        color: #e3e3e3 !important;
-    }
-    .stSelectbox span[data-baseweb="tag"] {
-        background-color: transparent !important;
-        color: #e3e3e3 !important;
-        font-weight: normal;
-        white-space: normal;
-    }
-    /* Icono de la flecha */
-    svg[width="12"] { fill: #9aa0a6; }
-
-    /* BOTÓN DE ANALIZAR */
-    .stButton > button[kind="secondary"] {
-        background-color: #8ab4f8;
-        color: #202124;
-        border: none;
-        border-radius: 20px;
-        font-weight: 600;
-        padding: 8px 25px;
-        transition: all 0.2s ease;
-    }
-    .stButton > button[kind="secondary"]:hover {
-        background-color: #aecbfa;
-        color: #202124;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    }
-
-    /* RESULTADOS */
-    div.stSuccess, div.stError {
-        background-color: #1e1f20;
-        border: 1px solid #3c4043;
-        border-radius: 16px;
-        padding: 1.2rem;
-    }
-    div.stSuccess { border-left: 4px solid #34a853; }
-    div.stError { border-left: 4px solid #ea4335; }
-    
-    /* BARRA DE PROGRESO */
-    .stProgress > div > div > div {
-        background-color: #8ab4f8;
-        border-radius: 10px;
-    }
-
-    /* HISTORIAL Y EXPANDERS */
-    .stExpander {
-        background-color: #1e1f20;
-        border: 1px solid #3c4043;
-        border-radius: 16px;
-        margin-bottom: 10px;
-    }
-    button[data-baseweb="accordion-trigger"] {
-        color: #e3e3e3 !important;
-        font-size: 15px;
-    }
-    .stSegmentedControl > div { background-color: #303134; border-radius: 12px; }
-    .stSegmentedControl button { color: #9aa0a6; border-radius: 10px; }
-    .stSegmentedControl button[aria-pressed="true"] { background-color: #8ab4f8; color: #202124; }
-    
-    div[data-testid="stMetricValue"] { color: #e3e3e3; }
-    div[data-testid="stMetricLabel"] { color: #9aa0a6; }
-    hr { border-color: #3c4043; margin: 2rem 0; }
-    
-    /* PIE DE PÁGINA */
-    .footer {
-        text-align: center;
-        color: #9aa0a6;
-        font-size: 14px;
-        margin-top: 4rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid #3c4043;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# ── Estado de sesión ──
-if "historial" not in st.session_state:
-    st.session_state.historial = []
-if "dsr" not in st.session_state:
-    with st.spinner("Cargando modelos de IA..."):
-        st.session_state.dsr = Dsr()
-
-# ═══════════════════════════════════════
-# CABECERA
-# ═══════════════════════════════════════
-if not st.session_state.historial:
-    st.markdown("<h1 style='text-align:center; font-weight:400; margin-bottom:0.5rem;'>Bienvenido</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:#9aa0a6; font-size:18px; margin-top:0;'>¿Qué reseña vamos a analizar hoy?</p>", unsafe_allow_html=True)
-else:
-    st.markdown("<h2 style='text-align:center; font-weight:400; margin-bottom:2rem;'>DSR-AI</h2>", unsafe_allow_html=True)
-
-# ═══════════════════════════════════════
-# RECUADRO PRINCIPAL
-# ═══════════════════════════════════════
-
-resena = st.text_area(
-    label="resena_oculta", 
-    placeholder="Escribe o pega tu reseña aquí. Puedes escribir en cualquier idioma...",
-    height=120,
-    label_visibility="collapsed",
-)
-
-# ── MODELOS ACTUALIZADOS ──
 MODELOS = {
     "KNN (K-Nearest Neighbors)": "knn",
     "Regresión Logística": "lr_model", 
 }
 
-# 1. Selector de modelo ocupando el ancho bajo el texto
-modelo_nombre = st.selectbox("modelo_oculto", list(MODELOS.keys()), label_visibility="collapsed")
+def configurar_pagina():
+    """Configura el entorno de Streamlit, carga el CSS y el estado de sesión."""
+    st.set_page_config(
+        page_title="DSR-AI | Análisis de Sentimiento",
+        layout="centered",
+        initial_sidebar_state="collapsed"
+    )
+    load_css(os.path.dirname(__file__))
 
-st.markdown("<div style='height: 10px'></div>", unsafe_allow_html=True) 
+    if "historial" not in st.session_state:
+        st.session_state.historial = []
+    if "dsr" not in st.session_state:
+        with st.spinner("Cargando modelos..."):
+            st.session_state.dsr = Dsr()
 
-# 2. Botón centrado perfectamente en la pantalla usando 3 columnas
-col_izq, col_centro, col_der = st.columns([1, 1, 1])
-with col_centro:
-    analizar = st.button("Analizar", use_container_width=True, type="secondary")
+def mostrar_cabecera():
+    """Renderiza el menú superior y el título dinámico."""
+    st.markdown("""
+    <div style='text-align: right; margin-bottom: -20px; z-index: 100; position: relative;'>
+        <a href='acerca-de' target='_self' style='color: #9aa0a6; text-decoration: none; font-weight: 500;'>Acerca de</a>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if not st.session_state.historial:
+        st.markdown("<div style='text-align:center; font-size:2.2em; font-weight:700; margin-bottom:0.5rem; margin-top:-1rem;'>Bienvenido</div>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align:center; color:#9aa0a6; font-size:18px; margin-top:0;'>¿Qué reseña vamos a analizar hoy?</p>", unsafe_allow_html=True)
+    else:
+        st.markdown("<div style='text-align:center; font-size:1.8em; font-weight:700; margin-bottom:2rem; margin-top:-1rem;'>DSR-AI</div>", unsafe_allow_html=True)
 
-# ═══════════════════════════════════════
-# LÓGICA DE PREDICCIÓN
-# ═══════════════════════════════════════
-if analizar:
-    modelo_id = MODELOS[modelo_nombre]
+def mostrar_formulario():
+    """Muestra la caja de texto, el selector de modelos y el botón. Retorna los inputs."""
+    resena = st.text_area(
+        label="resena_oculta", 
+        placeholder="Escribe o pega tu reseña aquí. Puedes escribir en cualquier idioma...",
+        height=120,
+        label_visibility="collapsed",
+    )
+    
+    col_model, col_btn = st.columns([0.65, 0.35], vertical_alignment="center")
+    with col_model:
+        modelo_nombre = st.selectbox("modelo_oculto", list(MODELOS.keys()), label_visibility="collapsed")
+    with col_btn:
+        analizar = st.button("Analizar", use_container_width=True, type="secondary")
+        
+    return resena, modelo_nombre, analizar
 
+def ejecutar_analisis(resena, modelo_nombre):
+    """Ejecuta la predicción del modelo y actualiza la UI y el historial."""
     if not resena or not resena.strip():
         st.warning("⚠️ Introduce una reseña para analizar.")
-    else:
-        with st.spinner("Analizando sentimiento..."):
-            prediccion, probabilidades = st.session_state.dsr.predict(resena, modelo=modelo_id)
+        return
 
-            es_positivo = prediccion[0] == 1
-            prob_pos = probabilidades[0][1] * 100
-            prob_neg = probabilidades[0][0] * 100
-            confianza = prob_pos if es_positivo else prob_neg
-            sentimiento = "POSITIVO" if es_positivo else "NEGATIVO"
-            emoji = "😊" if es_positivo else "😞"
+    modelo_id = MODELOS[modelo_nombre]
+    with st.spinner("Analizando sentimiento..."):
+        prediccion, probabilidades = st.session_state.dsr.predict(resena, modelo=modelo_id)
 
-            if es_positivo:
-                st.success(f"**{emoji} Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
-            else:
-                st.error(f"**{emoji} Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
+        es_positivo = prediccion[0] == 1
+        prob_pos = probabilidades[0][1] * 100
+        prob_neg = probabilidades[0][0] * 100
+        confianza = prob_pos if es_positivo else prob_neg
+        sentimiento = "POSITIVO" if es_positivo else "NEGATIVO"
+        emoji = "😊" if es_positivo else "😞"
 
-            st.progress(float(confianza / 100))
-            st.caption(f"Positivo: {prob_pos:.1f}%  |  Negativo: {prob_neg:.1f}%")
+        if es_positivo:
+            st.success(f"**{emoji} Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
+        else:
+            st.error(f"**{emoji} Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
 
-            st.session_state.historial.insert(0, {
-                "texto": resena.strip(),
-                "sentimiento": sentimiento,
-                "confianza": confianza,
-                "prob_positivo": prob_pos,
-                "prob_negativo": prob_neg,
-                "modelo": modelo_nombre.split(" (")[0],
-                "timestamp": datetime.now().strftime("%H:%M:%S"),
-            })
+        st.progress(float(confianza / 100))
+        st.caption(f"Positivo: {prob_pos:.1f}%  |  Negativo: {prob_neg:.1f}%")
 
-# ═══════════════════════════════════════
-# HISTORIAL
-# ═══════════════════════════════════════
-if st.session_state.historial:
+        st.session_state.historial.insert(0, {
+            "texto": resena.strip(),
+            "sentimiento": sentimiento,
+            "confianza": confianza,
+            "prob_positivo": prob_pos,
+            "prob_negativo": prob_neg,
+            "modelo": modelo_nombre.split(" (")[0],
+            "timestamp": datetime.now().strftime("%H:%M:%S"),
+        })
+
+def mostrar_historial():
+    """Dibuja el historial filtrable de análisis anteriores."""
+    if not st.session_state.historial:
+        return
+
     st.divider()
-    
     col_filtro, col_limpiar = st.columns([4, 1])
     with col_filtro:
         filtro = st.segmented_control(
@@ -268,27 +137,22 @@ if st.session_state.historial:
             st.write(r["texto"])
             st.caption(f'Modelo: **{r["modelo"]}** |  +{r["prob_positivo"]:.1f}%  /  -{r["prob_negativo"]:.1f}%')
 
-# ═══════════════════════════════════════
-# ACERCA DE (Restaurado en la parte inferior)
-# ═══════════════════════════════════════
-st.divider()
-with st.expander("Acerca de DSR-AI"):
-    readme_path = os.path.join(os.path.dirname(__file__), '..', 'README.md')
-    try:
-        with open(readme_path, 'r', encoding='utf-8') as f:
-            st.markdown(f.read())
-    except FileNotFoundError:
-        st.markdown("""
-        **DSR-AI** — Sistema de Detección de Sentimiento en Reseñas de Usuarios.  
-        Proyecto desarrollado para la asignatura de Introducción a la IA en la UPV.  
-        Modelos utilizados: Doc2Vec + K-Nearest Neighbors + Regresión Logística.
-        """)
+def mostrar_pie():
+    """Renderiza el footer estático al final de la página."""
+    st.markdown("""
+    <div class="footer">
+        Proyecto realizado por Adrián A. Acosta Villegas, Sergio Garfella Pérez, Ainara Sanfélix Ruiz, Jairo E. Urdaneta Colmenares.
+    </div>
+    """, unsafe_allow_html=True)
 
-# ═══════════════════════════════════════
-# PIE DE PÁGINA
-# ═══════════════════════════════════════
-st.markdown("""
-<div class="footer">
-    Proyecto realizado por Adrián A. Acosta Villegas, Sergio Garfella Pérez, Ainara Sanfélix Ruiz, Jairo E. Urdaneta Colmenares.
-</div>
-""", unsafe_allow_html=True)
+def main():
+    configurar_pagina()
+    mostrar_cabecera()
+    resena, modelo_nombre, analizar = mostrar_formulario()
+    if analizar:
+        ejecutar_analisis(resena, modelo_nombre)
+    mostrar_historial()
+    mostrar_pie()
+
+if __name__ == "__main__":
+    main()
