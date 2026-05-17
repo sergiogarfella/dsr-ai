@@ -272,7 +272,7 @@ if st.session_state.historial:
 # ACERCA DE (Restaurado en la parte inferior)
 # ═══════════════════════════════════════
 st.divider()
-with st.expander("ℹ️ Acerca de DSR-AI"):
+with st.expander("Acerca de DSR-AI"):
     readme_path = os.path.join(os.path.dirname(__file__), '..', 'README.md')
     try:
         with open(readme_path, 'r', encoding='utf-8') as f:
