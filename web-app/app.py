@@ -68,6 +68,7 @@ st.markdown("""
         background-color: #303134;
         border-radius: 20px;
         padding: 4px;
+        margin-bottom: 10px;
     }
     div[data-testid="stSelectbox"] label {
         display: none;
@@ -157,23 +158,6 @@ if "dsr" not in st.session_state:
         st.session_state.dsr = Dsr()
 
 # ═══════════════════════════════════════
-# ACERCA DE (Arriba a la derecha - Versión compatible)
-# ═══════════════════════════════════════
-col_vacio, col_acerca = st.columns([3, 1.5])
-with col_acerca:
-    with st.expander("ℹ️ Acerca de"):
-        readme_path = os.path.join(os.path.dirname(__file__), '..', 'README.md')
-        try:
-            with open(readme_path, 'r', encoding='utf-8') as f:
-                st.markdown(f.read())
-        except FileNotFoundError:
-            st.markdown("""
-            **DSR-AI** — Detección de Sentimiento.  
-            Proyecto - Introducción a la IA - UPV.  
-            Modelos: Doc2Vec + KNN + Regresión.
-            """)
-
-# ═══════════════════════════════════════
 # CABECERA
 # ═══════════════════════════════════════
 if not st.session_state.historial:
@@ -199,12 +183,14 @@ MODELOS = {
     "Regresión Logística": "lr_model", 
 }
 
-# (Versión compatible) Volvemos a usar el div espaciador para alinear el botón a la perfección
-col_modelo, col_boton = st.columns([3, 1.5], gap="large")
-with col_modelo:
-    modelo_nombre = st.selectbox("modelo_oculto", list(MODELOS.keys()), label_visibility="collapsed")
-with col_boton:
-    st.markdown("<div style='height: 4px'></div>", unsafe_allow_html=True) 
+# 1. Selector de modelo ocupando el ancho bajo el texto
+modelo_nombre = st.selectbox("modelo_oculto", list(MODELOS.keys()), label_visibility="collapsed")
+
+st.markdown("<div style='height: 10px'></div>", unsafe_allow_html=True) 
+
+# 2. Botón centrado perfectamente en la pantalla usando 3 columnas
+col_izq, col_centro, col_der = st.columns([1, 1, 1])
+with col_centro:
     analizar = st.button("Analizar", use_container_width=True, type="secondary")
 
 # ═══════════════════════════════════════
@@ -281,6 +267,22 @@ if st.session_state.historial:
         with st.expander(f'{emoji_hist} {r["sentimiento"]} — {r["confianza"]:.1f}% — {r["timestamp"]}'):
             st.write(r["texto"])
             st.caption(f'Modelo: **{r["modelo"]}** |  +{r["prob_positivo"]:.1f}%  /  -{r["prob_negativo"]:.1f}%')
+
+# ═══════════════════════════════════════
+# ACERCA DE (Restaurado en la parte inferior)
+# ═══════════════════════════════════════
+st.divider()
+with st.expander("ℹ️ Acerca de DSR-AI"):
+    readme_path = os.path.join(os.path.dirname(__file__), '..', 'README.md')
+    try:
+        with open(readme_path, 'r', encoding='utf-8') as f:
+            st.markdown(f.read())
+    except FileNotFoundError:
+        st.markdown("""
+        **DSR-AI** — Sistema de Detección de Sentimiento en Reseñas de Usuarios.  
+        Proyecto desarrollado para la asignatura de Introducción a la IA en la UPV.  
+        Modelos utilizados: Doc2Vec + K-Nearest Neighbors + Regresión Logística.
+        """)
 
 # ═══════════════════════════════════════
 # PIE DE PÁGINA
