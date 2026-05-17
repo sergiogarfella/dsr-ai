@@ -1,5 +1,5 @@
 """
-DSR-AI — Interfaz de Análisis de Sentimiento en Reseñas (Estilo Gemini)
+DSR-AI — Interfaz de Análisis de Sentimiento en Reseñas (Estilo Light/Minimalista)
 Proyecto I. Introducción a la IA — UPV
 """
 
@@ -19,134 +19,139 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ── CSS: Estilo Gemini ──
+# ── CSS: Estilo Light Mode Minimalista ──
 st.markdown("""
 <style>
-    /* Fondo principal oscuro tipo Gemini */
+    /* Fondo principal claro */
     .stApp {
-        background-color: #131314;
-        color: #e3e3e3;
+        background-color: #f8f9fa;
+        color: #212529;
     }
 
-    /* Ocultar elementos nativos de Streamlit */
+    /* Ocultar elementos nativos */
     #MainMenu, footer, header { visibility: hidden; }
-    .stApp > header { background-color: rgba(19, 19, 20, 0.8); backdrop-filter: blur(10px); }
+    .stApp > header { background-color: rgba(248, 249, 250, 0.9); backdrop-filter: blur(10px); }
     
-    /* Tipografía general */
-    html, body, [class*="css"] { font-family: 'Google Sans', 'Inter', sans-serif; }
+    /* Tipografía */
+    html, body, [class*="css"] { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
     
-    /* Contenedor principal centrado */
+    /* Contenedor centrado */
     .main .block-container {
         max-width: 750px;
-        padding-top: 2rem;
-        padding-bottom: 2rem;
+        padding-top: 4rem;
+        padding-bottom: 5rem;
     }
 
     /* EL RECUADRO DE TEXTO */
     div[data-testid="stTextArea"] {
-        background-color: #1e1f20 !important;
-        border: 1px solid #3c4043 !important;
-        border-radius: 24px !important;
-        padding: 15px 20px !important;
+        background-color: #ffffff !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 20px !important;
+        padding: 20px !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03); /* Sombra muy suave */
         transition: all 0.2s ease;
     }
     div[data-testid="stTextArea"]:focus-within {
-        border-color: #8ab4f8 !important;
-        box-shadow: 0 0 0 1px #8ab4f8;
+        border-color: #4dabf7 !important;
+        box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.15);
     }
     div[data-testid="stTextArea"] textarea {
         background-color: transparent !important;
-        color: #e3e3e3 !important;
+        color: #212529 !important;
         font-size: 16px;
     }
     div[data-testid="stTextArea"] textarea::placeholder {
-        color: #9aa0a6 !important;
+        color: #adb5bd !important;
     }
 
     /* SELECTOR DE MODELO */
+    div[data-testid="stSelectbox"] label { display: none; }
     div[data-testid="stSelectbox"] {
-        background-color: #303134;
-        border-radius: 20px;
-        padding: 4px;
-        margin-bottom: 10px;
+        background-color: #ffffff !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 12px !important;
+        padding: 4px 12px !important;
     }
-    div[data-testid="stSelectbox"] label {
-        display: none;
-    }
-    /* Forzar que el texto sea blanco y no se corte */
     .stSelectbox div[data-baseweb="select"] {
         background-color: transparent !important;
-        color: #e3e3e3 !important;
+        color: #495057 !important;
     }
     .stSelectbox span[data-baseweb="tag"] {
         background-color: transparent !important;
-        color: #e3e3e3 !important;
+        color: #495057 !important;
         font-weight: normal;
         white-space: normal;
     }
-    /* Icono de la flecha */
-    svg[width="12"] { fill: #9aa0a6; }
+    svg[width="12"] { fill: #868e96; }
 
-    /* BOTÓN DE ANALIZAR */
+    /* BOTÓN DE ANALIZAR (Azul llamativo) */
     .stButton > button[kind="secondary"] {
-        background-color: #8ab4f8;
-        color: #202124;
+        background-color: #0d6efd;
+        color: #ffffff !important;
         border: none;
-        border-radius: 20px;
+        border-radius: 12px;
         font-weight: 600;
-        padding: 8px 25px;
+        padding: 10px 28px;
+        box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
         transition: all 0.2s ease;
     }
     .stButton > button[kind="secondary"]:hover {
-        background-color: #aecbfa;
-        color: #202124;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        background-color: #0b5ed7;
+        color: #ffffff !important;
+        box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+        transform: translateY(-1px);
     }
 
-    /* RESULTADOS */
-    div.stSuccess, div.stError {
-        background-color: #1e1f20;
-        border: 1px solid #3c4043;
-        border-radius: 16px;
+    /* RESULTADOS (Tarjetas blancas con borde lateral) */
+    div.stSuccess {
+        background-color: #ffffff;
+        border: 1px solid #d3f9d8;
+        border-left: 5px solid #2b8a3e;
+        border-radius: 12px;
+        color: #2b8a3e;
         padding: 1.2rem;
     }
-    div.stSuccess { border-left: 4px solid #34a853; }
-    div.stError { border-left: 4px solid #ea4335; }
+    div.stError {
+        background-color: #ffffff;
+        border: 1px solid #ffe3e3;
+        border-left: 5px solid #e03131;
+        border-radius: 12px;
+        color: #e03131;
+        padding: 1.2rem;
+    }
     
     /* BARRA DE PROGRESO */
     .stProgress > div > div > div {
-        background-color: #8ab4f8;
+        background-color: #0d6efd;
         border-radius: 10px;
     }
 
     /* HISTORIAL Y EXPANDERS */
     .stExpander {
-        background-color: #1e1f20;
-        border: 1px solid #3c4043;
-        border-radius: 16px;
-        margin-bottom: 10px;
+        background-color: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        margin-bottom: 8px;
     }
     button[data-baseweb="accordion-trigger"] {
-        color: #e3e3e3 !important;
+        color: #343a40 !important;
         font-size: 15px;
     }
-    .stSegmentedControl > div { background-color: #303134; border-radius: 12px; }
-    .stSegmentedControl button { color: #9aa0a6; border-radius: 10px; }
-    .stSegmentedControl button[aria-pressed="true"] { background-color: #8ab4f8; color: #202124; }
     
-    div[data-testid="stMetricValue"] { color: #e3e3e3; }
-    div[data-testid="stMetricLabel"] { color: #9aa0a6; }
-    hr { border-color: #3c4043; margin: 2rem 0; }
-    
-    /* PIE DE PÁGINA */
-    .footer {
-        text-align: center;
-        color: #9aa0a6;
-        font-size: 14px;
-        margin-top: 4rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid #3c4043;
+    /* Filtros segmentados */
+    .stSegmentedControl > div { background-color: #e9ecef; border-radius: 10px; }
+    .stSegmentedControl button { color: #495057; border-radius: 8px; }
+    .stSegmentedControl button[aria-pressed="true"] { 
+        background-color: #ffffff; 
+        color: #0d6efd; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
+    
+    /* Métricas */
+    div[data-testid="stMetricValue"] { color: #212529; }
+    div[data-testid="stMetricLabel"] { color: #868e96; }
+    
+    hr { border-color: #dee2e6; margin: 2.5rem 0; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -158,13 +163,13 @@ if "dsr" not in st.session_state:
         st.session_state.dsr = Dsr()
 
 # ═══════════════════════════════════════
-# CABECERA
+# CABECERA (Texto exacto de la imagen)
 # ═══════════════════════════════════════
 if not st.session_state.historial:
-    st.markdown("<h1 style='text-align:center; font-weight:400; margin-bottom:0.5rem;'>Bienvenido</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:#9aa0a6; font-size:18px; margin-top:0;'>¿Qué reseña vamos a analizar hoy?</p>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align:center; font-weight:600; color:#212529; margin-bottom:0.2rem;'>Bienvenido a DSR-AI</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#868e96; font-size:18px; margin-top:0;'>¿Qué reseña vamos a analizar hoy?</p>", unsafe_allow_html=True)
 else:
-    st.markdown("<h2 style='text-align:center; font-weight:400; margin-bottom:2rem;'>DSR-AI</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; font-weight:600; color:#212529; margin-bottom:2rem;'>DSR-AI</h2>", unsafe_allow_html=True)
 
 # ═══════════════════════════════════════
 # RECUADRO PRINCIPAL
@@ -177,20 +182,17 @@ resena = st.text_area(
     label_visibility="collapsed",
 )
 
-# ── MODELOS ACTUALIZADOS ──
+# ── MODELOS ──
 MODELOS = {
     "KNN (K-Nearest Neighbors)": "knn",
-    "Regresión Logística": "lr_model", 
+    "Regresión Logística": "logistic", 
 }
 
-# 1. Selector de modelo ocupando el ancho bajo el texto
-modelo_nombre = st.selectbox("modelo_oculto", list(MODELOS.keys()), label_visibility="collapsed")
-
-st.markdown("<div style='height: 10px'></div>", unsafe_allow_html=True) 
-
-# 2. Botón centrado perfectamente en la pantalla usando 3 columnas
-col_izq, col_centro, col_der = st.columns([1, 1, 1])
-with col_centro:
+col_modelo, col_boton = st.columns([3, 1.5], gap="large")
+with col_modelo:
+    modelo_nombre = st.selectbox("modelo_oculto", list(MODELOS.keys()), label_visibility="collapsed")
+with col_boton:
+    st.markdown("<div style='height: 15px'></div>", unsafe_allow_html=True) 
     analizar = st.button("Analizar", use_container_width=True, type="secondary")
 
 # ═══════════════════════════════════════
@@ -217,7 +219,7 @@ if analizar:
             else:
                 st.error(f"**{emoji} Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
 
-            st.progress(float(confianza / 100))
+            st.progress(confianza / 100)
             st.caption(f"Positivo: {prob_pos:.1f}%  |  Negativo: {prob_neg:.1f}%")
 
             st.session_state.historial.insert(0, {
@@ -266,11 +268,8 @@ if st.session_state.historial:
         emoji_hist = "😊" if r["sentimiento"] == "POSITIVO" else "😞"
         with st.expander(f'{emoji_hist} {r["sentimiento"]} — {r["confianza"]:.1f}% — {r["timestamp"]}'):
             st.write(r["texto"])
-            st.caption(f'Modelo: **{r["modelo"]}** |  +{r["prob_positivo"]:.1f}%  /  -{r["prob_negativo"]:.1f}%')
+            st.caption(f'Modelo: **{r["modelo"]}**  |  +{r["prob_positivo"]:.1f}%  /  -{r["prob_negativo"]:.1f}%')
 
-# ═══════════════════════════════════════
-# ACERCA DE (Restaurado en la parte inferior)
-# ═══════════════════════════════════════
 st.divider()
 with st.expander("Acerca de DSR-AI"):
     readme_path = os.path.join(os.path.dirname(__file__), '..', 'README.md')
@@ -283,12 +282,3 @@ with st.expander("Acerca de DSR-AI"):
         Proyecto desarrollado para la asignatura de Introducción a la IA en la UPV.  
         Modelos utilizados: Doc2Vec + K-Nearest Neighbors + Regresión Logística.
         """)
-
-# ═══════════════════════════════════════
-# PIE DE PÁGINA
-# ═══════════════════════════════════════
-st.markdown("""
-<div class="footer">
-    Proyecto realizado por Adrián A. Acosta Villegas, Sergio Garfella Pérez, Ainara Sanfélix Ruiz, Jairo E. Urdaneta Colmenares.
-</div>
-""", unsafe_allow_html=True)
