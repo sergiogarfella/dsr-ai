@@ -38,8 +38,8 @@ st.markdown("""
     /* Contenedor principal centrado */
     .main .block-container {
         max-width: 750px;
-        padding-top: 3rem;
-        padding-bottom: 5rem;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
     }
 
     /* EL RECUADRO DE TEXTO */
@@ -63,7 +63,7 @@ st.markdown("""
         color: #9aa0a6 !important;
     }
 
-    /* SELECTOR DE MODELO (Corregido para que se lea bien) */
+    /* SELECTOR DE MODELO */
     div[data-testid="stSelectbox"] {
         background-color: #303134;
         border-radius: 20px;
@@ -136,6 +136,16 @@ st.markdown("""
     div[data-testid="stMetricValue"] { color: #e3e3e3; }
     div[data-testid="stMetricLabel"] { color: #9aa0a6; }
     hr { border-color: #3c4043; margin: 2rem 0; }
+    
+    /* PIE DE PÁGINA */
+    .footer {
+        text-align: center;
+        color: #9aa0a6;
+        font-size: 14px;
+        margin-top: 4rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #3c4043;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -146,124 +156,4 @@ if "dsr" not in st.session_state:
     with st.spinner("Cargando modelos de IA..."):
         st.session_state.dsr = Dsr()
 
-# ═══════════════════════════════════════
-# CABECERA
-# ═══════════════════════════════════════
-if not st.session_state.historial:
-    st.markdown("<h1 style='text-align:center; font-weight:400; margin-bottom:0.5rem;'>Bienvenido</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:#9aa0a6; font-size:18px; margin-top:0;'>¿Qué reseña vamos a analizar hoy?</p>", unsafe_allow_html=True)
-else:
-    st.markdown("<h2 style='text-align:center; font-weight:400; margin-bottom:2rem;'>DSR-AI</h2>", unsafe_allow_html=True)
-
-# ═══════════════════════════════════════
-# RECUADRO PRINCIPAL
-# ═══════════════════════════════════════
-
-resena = st.text_area(
-    label="resena_oculta", 
-    placeholder="Escribe o pega tu reseña aquí. Puedes escribir en cualquier idioma...",
-    height=120,
-    label_visibility="collapsed",
-)
-
-# ── MODELOS ACTUALIZADOS ──
-# Modificado según el aviso: el modelo de regresión se llama lr_model.pkl
-MODELOS = {
-    "KNN (K-Nearest Neighbors)": "knn",
-    "Regresión Logística": "lr_model", 
-}
-
-col_modelo, col_boton = st.columns([3, 1.5], gap="large")
-with col_modelo:
-    modelo_nombre = st.selectbox("modelo_oculto", list(MODELOS.keys()), label_visibility="collapsed")
-with col_boton:
-    st.markdown("<div style='height: 15px'></div>", unsafe_allow_html=True) 
-    analizar = st.button("Analizar", use_container_width=True, type="secondary")
-
-# ═══════════════════════════════════════
-# LÓGICA DE PREDICCIÓN
-# ═══════════════════════════════════════
-if analizar:
-    modelo_id = MODELOS[modelo_nombre]
-
-    if not resena or not resena.strip():
-        st.warning("⚠️ Introduce una reseña para analizar.")
-    else:
-        with st.spinner("Analizando sentimiento..."):
-            prediccion, probabilidades = st.session_state.dsr.predict(resena, modelo=modelo_id)
-
-            es_positivo = prediccion[0] == 1
-            prob_pos = probabilidades[0][1] * 100
-            prob_neg = probabilidades[0][0] * 100
-            confianza = prob_pos if es_positivo else prob_neg
-            sentimiento = "POSITIVO" if es_positivo else "NEGATIVO"
-            emoji = "😊" if es_positivo else "😞"
-
-            if es_positivo:
-                st.success(f"**{emoji} Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
-            else:
-                st.error(f"**{emoji} Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
-
-            st.progress(float(confianza / 100))
-            st.caption(f"Positivo: {prob_pos:.1f}%  |  Negativo: {prob_neg:.1f}%")
-
-            st.session_state.historial.insert(0, {
-                "texto": resena.strip(),
-                "sentimiento": sentimiento,
-                "confianza": confianza,
-                "prob_positivo": prob_pos,
-                "prob_negativo": prob_neg,
-                "modelo": modelo_nombre.split(" (")[0],
-                "timestamp": datetime.now().strftime("%H:%M:%S"),
-            })
-
-# ═══════════════════════════════════════
-# HISTORIAL
-# ═══════════════════════════════════════
-if st.session_state.historial:
-    st.divider()
-    
-    col_filtro, col_limpiar = st.columns([4, 1])
-    with col_filtro:
-        filtro = st.segmented_control(
-            "Filtro", ["Todas", "Positivas", "Negativas"],
-            default="Todas", label_visibility="collapsed",
-            selection_mode="single"
-        )
-    with col_limpiar:
-        st.markdown("<div style='height: 8px'></div>", unsafe_allow_html=True)
-        if st.button("Limpiar", use_container_width=True):
-            st.session_state.historial = []
-            st.rerun()
-
-    historial = st.session_state.historial
-    if filtro == "Positivas":
-        historial = [r for r in historial if r["sentimiento"] == "POSITIVO"]
-    elif filtro == "Negativas":
-        historial = [r for r in historial if r["sentimiento"] == "NEGATIVO"]
-
-    total = len(st.session_state.historial)
-    positivas = sum(1 for r in st.session_state.historial if r["sentimiento"] == "POSITIVO")
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Total", total)
-    c2.metric("Positivas", positivas)
-    c3.metric("Negativas", total - positivas)
-
-    for r in historial:
-        emoji_hist = "😊" if r["sentimiento"] == "POSITIVO" else "😞"
-        with st.expander(f'{emoji_hist} {r["sentimiento"]} — {r["confianza"]:.1f}% — {r["timestamp"]}'):
-            st.write(r["texto"])
-            st.caption(f'Modelo: **{r["modelo"]}** |  +{r["prob_positivo"]:.1f}%  /  -{r["prob_negativo"]:.1f}%')
-
-st.divider()
-with st.expander("Acerca de DSR-AI"):
-    readme_path = os.path.join(os.path.dirname(__file__), '..', 'README.md')
-    try:
-        with open(readme_path, 'r', encoding='utf-8') as f:
-            st.markdown(f.read())
-    except FileNotFoundError:
-        st.markdown("""
-        **DSR-AI** — Sistema de Detección de Sentimiento en Reseñas de Usuarios.  
-        Proyecto desarrollado para la asignatura de Introducción a la IA en la UPV.  
-        Modelos utilizados: Doc2Vec + K-Nearest Neighbors + Regresión Logística.
-        """)
+# ════
