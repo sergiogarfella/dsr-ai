@@ -10,100 +10,25 @@ import nltk
 import pickle
 
 
-# Carga de dataset
-df = pd.read_csv("datasets/dataset_unificado_corregido.csv")
 
-# Division de registros. Separando 10000 registros clases balanceadas y con etiqueta de entrenamiento
-pos_train = df[(df["sentimiento"]=="pos") & (df["split"]=="train")].sample(n=5000, random_state=42)
-neg_train = df[(df["sentimiento"]=="neg") & (df["split"]=="train")].sample(n=5000, random_state=42)
-df_balanced = pd.concat([pos_train, neg_train]).sample(frac=1, random_state=42).reset_index(drop=True)
+import sys
+from pathlib import Path
 
-
-# Unicode Emoticones
-EMOJI_PATTERN = re.compile(
-    "["
-    u"\U0001F600-\U0001F64F"   # emoticons
-    u"\U0001F300-\U0001F5FF"   # símbolos y pictogramas
-    u"\U0001F680-\U0001F9FF"   # transport, misc symbols
-    u"\U00002600-\U000027BF"   # símbolos varios
-    "]+",
-    flags=re.UNICODE
-)
-
-
-def get_wordnet_pos(treebank_tag): # Devuelve el significado del diccionario de wordnet
-    """Convierte el POS tag de NLTK al formato de WordNet."""
-    if treebank_tag.startswith('J'):
-        return wordnet.ADJ
-    elif treebank_tag.startswith('V'):
-        return wordnet.VERB
-    elif treebank_tag.startswith('R'):
-        return wordnet.ADV
-    else:
-        return wordnet.NOUN 
-
+# Asegurar que el directorio raíz está en el PYTHONPATH para importar dsr
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+from dsr.text_clean import CleanText
 
 
 def clean_docs(df: pd.DataFrame) -> list:
-  lemmatizer = WordNetLemmatizer()
-
-  # Eliminacion de caracteres especiales. urls, htmls, emojis, etc.
-  cleaned_docs = []
-  for text in df["texto"]:
-    text = html.unescape(text) 
-    text = re.sub(r'<[^>]+>', ' ', text)
-    text = re.sub(r'http\S+|www\.\S+', ' ', text)
-    text = EMOJI_PATTERN.sub(' ', text)
-    text = re.sub(r'(.)\1{2,}', r'\1\1', text)
-    text = re.sub(r'\s+', ' ', text).strip()
-    cleaned_docs.append(text)
-    
-  # conversion de documentos a minusculas
-  raw_docs = [cleaned_docs[x].lower() for x in range(len(cleaned_docs))]
-  
-  # Eliminar numeros
-  raw_docs = [re.sub(r'\d+', ' ', doc) for doc in raw_docs]
-  raw_docs = [re.sub(r'\s+', ' ', doc).strip() for doc in raw_docs]
-  
-  # Tokenizacion
-  tokenize_docs = [word_tokenize(doc) for doc in raw_docs]
-  
-  # Remover puntuacion
-  regex = re.compile('[%s]' % re.escape(string.punctuation))
-  tokenize_docs_no_punctuation = []
-  for review in tokenize_docs:
-    new_review = []
-    for token in review:
-      new_token = regex.sub(u'', token)
-      if not new_token == u'':
-        new_review.append(new_token)
-    tokenize_docs_no_punctuation.append(new_review)
-
-  # Remover stopwords
-  stop_words = set(stopwords.words('english'))
-  keep = {"no", "not", "nor", "never", "neither", "very", "too", "but", "however", "although"}
-  stop_words -= keep
-  tokenized_docs_no_stopwords = []
-  for doc in tokenize_docs_no_punctuation:
-    new_term_vector = []
-    for word in doc:
-      if not word in stop_words:
-        new_term_vector.append(word)
-
-    tokenized_docs_no_stopwords.append(new_term_vector)
-  
-  # Lemmatizacion
-  tokenized_docs_clean = []
-  for doc in tokenized_docs_no_stopwords:
-    pos_tags = pos_tag(doc)  # [('running', 'VBG'), ('good', 'JJ'), ...]
-    lemmatized = [lemmatizer.lemmatize(word, get_wordnet_pos(tag)) for word, tag in pos_tags]
-    tokenized_docs_clean.append(lemmatized)
-
-  return tokenized_docs_clean
+    """Aplica la limpieza de texto centralizada a una columna de DataFrame."""
+    tokenized_docs_clean = []
+    for text in df["texto"]:
+        tokenized_docs_clean.append(CleanText.clean_text(text))
+    return tokenized_docs_clean
 
 
 # Carga de dataset
-df = pd.read_csv("datasets/dataset_unificado_corregido.csv")
+df = pd.read_csv("data/raw/dataset_unificado_corregido.csv")
 
 # Division de registros. Separando 10000 registros clases balanceadas y con etiqueta de entrenamiento
 pos_train = df[(df["sentimiento"]=="pos") & (df["split"]=="train")].sample(n=5000, random_state=42)
@@ -143,5 +68,3 @@ with open('data/processed/y_train.pkl', 'wb') as f:
 with open('data/processed/y_test.pkl', 'wb') as f:
     pickle.dump(y_test, f)
     print("Variable y_test guardada correctamente")
-
-

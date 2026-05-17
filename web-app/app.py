@@ -1,6 +1,5 @@
 """
 DSR-AI — Interfaz de Análisis de Sentimiento en Reseñas
-Proyecto de la UPV
 """
 
 import streamlit as st

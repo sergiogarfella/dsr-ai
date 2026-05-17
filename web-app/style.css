@@ -1,7 +1,38 @@
-/* Fondo principal oscuro */
+/* =========================================================================
+   1. VARIABLES DE DISEÑO (DESIGN TOKENS)
+   ========================================================================= */
+:root {
+    /* Paleta de Colores Básica */
+    --bg-color-main: #131314;
+    --text-color-primary: #e3e3e3;
+    --text-color-muted: #9aa0a6;
+    
+    /* Acentos Índigo / Morado Azulado */
+    --color-accent-glow: #818cf8;
+    --color-accent-solid: rgba(79, 70, 229, 0.5);
+    --color-accent-solid-border: rgba(129, 140, 248, 0.3);
+    --color-accent-hover: rgba(99, 102, 241, 0.7);
+    --color-accent-hover-border: rgba(129, 140, 248, 0.6);
+    --color-accent-hover-glow: rgba(99, 102, 241, 0.3);
+    
+    /* Configuración de Glassmorphism */
+    --glass-bg: rgba(30, 31, 32, 0.45);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+    --glass-blur: blur(12px);
+    --glass-radius: 16px;
+    
+    /* Alertas y Bordes */
+    --color-success: #34a853;
+    --color-error: #ea4335;
+    --color-border-dark: #3c4043;
+}
+
+/* =========================================================================
+   2. ESTILOS GLOBALES Y CONFIGURACIÓN DE PÁGINA
+   ========================================================================= */
 .stApp {
-    background-color: #131314;
-    color: #e3e3e3;
+    background-color: var(--bg-color-main);
+    color: var(--text-color-primary);
 }
 
 /* Ocultar elementos nativos de Streamlit */
@@ -16,7 +47,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-/* Tipografía general premium */
+/* Tipografía general */
 html, body, [class*="css"], * {
     font-family: 'Inter', sans-serif !important;
 }
@@ -29,7 +60,7 @@ html, body, [class*="css"], * {
 }
 
 /* =========================================================================
-   COMPONENTES CON EFECTO GLASSMORPHISM (CRISTAL ESMERILADO)
+   3. COMPONENTE BASE: GLASSMORPHISM CENTRALIZADO
    ========================================================================= */
 div[data-testid="stTextArea"],
 .stSelectbox div[data-baseweb="select"],
@@ -38,96 +69,115 @@ div.stSuccess,
 div.stError,
 .stExpander,
 .stSegmentedControl > div {
-    background-color: rgba(30, 31, 32, 0.45) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 16px !important;
+    background-color: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+    border: var(--glass-border) !important;
+    border-radius: var(--glass-radius) !important;
 }
 
-/* EL RECUADRO DE TEXTO */
+/* =========================================================================
+   4. ENTRADA DE TEXTO (TEXT AREA)
+   ========================================================================= */
 div[data-testid="stTextArea"] {
     padding: 15px 20px !important;
     transition: all 0.2s ease;
 }
 
 div[data-testid="stTextArea"]:focus-within {
-    border-color: #818cf8 !important;
-    box-shadow: 0 0 0 1px #818cf8;
+    border-color: var(--color-accent-glow) !important;
+    box-shadow: 0 0 0 1px var(--color-accent-glow);
 }
 
 div[data-testid="stTextArea"] textarea {
     background-color: transparent !important;
-    color: #e3e3e3 !important;
+    color: var(--text-color-primary) !important;
     font-size: 16px;
 }
-div[data-baseweb="textarea"], div[data-baseweb="base-input"] {
+
+div[data-baseweb="textarea"], 
+div[data-baseweb="base-input"] {
     background-color: transparent !important;
     border: none !important;
 }
 
 div[data-testid="stTextArea"] textarea::placeholder {
-    color: #9aa0a6 !important;
+    color: var(--text-color-muted) !important;
 }
 
-/* SELECTOR DE MODELO */
+/* =========================================================================
+   5. SELECTOR DE MODELO (SELECTBOX)
+   ========================================================================= */
 div[data-testid="stSelectbox"] {
     margin-bottom: 0px !important;
 }
+
 div[data-testid="stSelectbox"] label {
     display: none;
 }
 
 .stSelectbox div[data-baseweb="select"] {
     overflow: hidden !important;
-    color: #e3e3e3 !important;
+    color: var(--text-color-primary) !important;
 }
+
 .stSelectbox div[data-baseweb="select"] > div {
     background-color: transparent !important;
-    border-radius: 16px !important;
+    border-radius: var(--glass-radius) !important;
 }
 
 .stSelectbox span[data-baseweb="tag"] {
     background-color: transparent !important;
-    color: #e3e3e3 !important;
+    color: var(--text-color-primary) !important;
     font-weight: normal;
     white-space: normal;
 }
 
-/* Ventana flotante del selector de modelos */
+svg[width="12"] {
+    fill: var(--text-color-muted);
+}
+
+/* =========================================================================
+   6. VENTANA FLOTANTE DEL DESPLEGABLE (POPOVER)
+   ========================================================================= */
 [data-baseweb="popover"] {
-    background-color: rgba(30, 31, 32, 0.45) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 16px !important;
+    background-color: var(--glass-bg) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+    border: var(--glass-border) !important;
+    border-radius: var(--glass-radius) !important;
     overflow: hidden !important;
     padding: 0 !important;
 }
 
-[data-baseweb="popover"] * {
+[data-baseweb="popover"] div {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+ul[data-baseweb="menu"] {
     background-color: transparent !important;
     border: none !important;
-    box-shadow: none !important;
+    padding: 4px 0 !important;
 }
 
 li[role="option"] {
     padding: 5px 12px !important;
-    color: #e3e3e3 !important;
+    color: var(--text-color-primary) !important;
 }
 
-li[role="option"]:hover, li[role="option"][aria-selected="true"] {
+li[role="option"]:hover, 
+li[role="option"][aria-selected="true"] {
     background-color: rgba(129, 140, 248, 0.3) !important;
 }
 
-svg[width="12"] {
-    fill: #9aa0a6;
-}
-
-/* BOTÓN DE ANALIZAR */
+/* =========================================================================
+   7. BOTÓN ACCIÓN (ANALIZAR)
+   ========================================================================= */
 .stButton>button[kind="secondary"] {
-    background-color: rgba(79, 70, 229, 0.5) !important;
-    border-color: rgba(129, 140, 248, 0.3) !important;
+    background-color: var(--color-accent-solid) !important;
+    border-color: var(--color-accent-solid-border) !important;
     color: #ffffff;
     padding: 8px 25px;
     transition: all 0.2s ease;
@@ -138,76 +188,82 @@ svg[width="12"] {
 }
 
 .stButton>button[kind="secondary"]:hover {
-    background-color: rgba(99, 102, 241, 0.7) !important;
-    border-color: rgba(129, 140, 248, 0.6) !important;
+    background-color: var(--color-accent-hover) !important;
+    border-color: var(--color-accent-hover-border) !important;
     color: #ffffff;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 15px var(--color-accent-hover-glow);
 }
 
-/* RESULTADOS */
-div.stSuccess, div.stError {
+/* =========================================================================
+   8. ALERTAS Y FEEDBACK
+   ========================================================================= */
+div.stSuccess, 
+div.stError {
     padding: 1.2rem;
 }
 
 div.stSuccess {
-    border-left: 4px solid #34a853 !important;
+    border-left: 4px solid var(--color-success) !important;
 }
 
 div.stError {
-    border-left: 4px solid #ea4335 !important;
+    border-left: 4px solid var(--color-error) !important;
 }
 
-/* BARRA DE PROGRESO */
+/* Barra de progreso */
 .stProgress>div>div>div {
-    background-color: #818cf8;
-    border-radius: 16px;
+    background-color: var(--color-accent-glow);
+    border-radius: var(--glass-radius);
 }
 
-/* HISTORIAL Y EXPANDERS */
+/* =========================================================================
+   9. ELEMENTOS DE HISTORIAL Y MÉTRICAS
+   ========================================================================= */
 .stExpander {
     margin-bottom: 10px;
 }
 
 button[data-baseweb="accordion-trigger"] {
-    color: #e3e3e3 !important;
+    color: var(--text-color-primary) !important;
     font-size: 15px;
 }
 
 .stSegmentedControl button {
-    color: #9aa0a6;
+    color: var(--text-color-muted);
     border-radius: 14px;
 }
 
 .stSegmentedControl button[aria-pressed="true"] {
-    background-color: #818cf8;
+    background-color: var(--color-accent-glow);
     color: #202124;
 }
 
 div[data-testid="stMetricValue"] {
-    color: #e3e3e3;
+    color: var(--text-color-primary);
 }
 
 div[data-testid="stMetricLabel"] {
-    color: #9aa0a6;
+    color: var(--text-color-muted);
 }
 
 hr {
-    border-color: #3c4043;
+    border-color: var(--color-border-dark);
     margin: 2rem 0;
 }
 
-/* Enlaces */
+/* =========================================================================
+   10. ENLACES Y PIE DE PÁGINA
+   ========================================================================= */
 a {
-    color: #818cf8 !important;
+    color: var(--color-accent-glow) !important;
     text-decoration: none;
 }
 
-/* PIE DE PÁGINA */
 .footer {
     text-align: center;
-    color: #9aa0a6;
+    color: var(--text-color-muted);
     font-size: 14px;
     margin-top: 4rem;
     padding-top: 1.5rem;
-    border-top: 1px solid #3c4043;
+    border-top: 1px solid var(--color-border-dark);
 }

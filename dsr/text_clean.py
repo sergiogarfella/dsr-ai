@@ -59,8 +59,10 @@ class CleanText:
         # Filtrar tokens vacíos y tokens de 1-2 caracteres
         tokens = [t for t in tokens if len(t) > 2]
     
-        # Eliminar stopwords
+        # Eliminar stopwords (conservando palabras clave para sentimiento)
         stop_words = set(stopwords.words('english'))
+        keep = {"no", "not", "nor", "never", "neither", "very", "too", "but", "however", "although"}
+        stop_words -= keep
         tokens = [t for t in tokens if t not in stop_words]
     
         #Lematización con POS tagging

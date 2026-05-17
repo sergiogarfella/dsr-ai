@@ -2,14 +2,16 @@ import streamlit as st
 import os
 import base64
 
-def load_css(base_dir):
+@st.cache_data
+def get_cached_css(base_dir):
     """
-    Carga el archivo CSS externo y codifica el fondo en base64 para inyectarlo 
-    globalmente en la aplicación Streamlit.
+    Lee los archivos estáticos y codifica la imagen de fondo en base64.
+    Esta función está totalmente cacheada para evitar accesos repetidos a disco
+    y operaciones redundantes de codificación de imagen.
     """
     css_path = os.path.join(base_dir, 'style.css')
     try:
-        with open(css_path, 'r') as f:
+        with open(css_path, 'r', encoding='utf-8') as f:
             css = f.read()
     except FileNotFoundError:
         css = ""
@@ -25,4 +27,11 @@ def load_css(base_dir):
             background-attachment: fixed;
         }}
         """
+    return css
+
+def load_css(base_dir):
+    """
+    Recupera el CSS optimizado de la caché e inyecta los estilos globalmente.
+    """
+    css = get_cached_css(base_dir)
     st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)

@@ -17,8 +17,8 @@ model.train(labeled_data, total_examples=model.corpus_count, epochs=model.epochs
 print("Entrenamiento Doc2Vec finalizado correctamente")
 
 # Guardar modelo para no repetir este proceso
-model.save("proyect-package/dsr/doc2vec_model")
-print("Modelo Doc2Vec guardado en proyect-package/dsr/doc2vec_model")
+model.save("dsr/doc2vec_model")
+print("Modelo Doc2Vec guardado en dsr/doc2vec_model")
 
 # Vectorizacion usando el modelo ya entrenado
 # infer_vector se aplica a cada documento individualmente
