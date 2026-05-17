@@ -62,25 +62,3 @@ htmlcov/
 # Logs
 # =====================================
 *.log
-
-# =====================================
-# Datos y datasets (archivos grandes)
-# =====================================
-*.csv
-data/raw/aclImdb/
-data/raw/review_polarity/
-data/raw/stanfordSentimentTreebank/
-
-# =====================================
-# Modelos y artefactos de ML
-# =====================================
-*.pkl
-*.npy
-*.d2v
-doc2vec_model
-data/processed/
-
-# =====================================
-# Symlinks de compatibilidad
-# =====================================
-datasets

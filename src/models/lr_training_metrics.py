@@ -18,9 +18,9 @@ logreg = LogisticRegression(penalty="l2", C=0.01, max_iter=1000, solver="saga")
 logreg.fit(X_train, y_train) # Entrenamiento
 
 # Guardar modelo LR en el paquete dsr
-with open('dsr/lr_model.pkl', 'wb') as f:
+with open('proyect-package/dsr/lr_model.pkl', 'wb') as f:
     pickle.dump(logreg, f)
-print("Modelo LR guardado en dsr/lr_model.pkl")
+print("Modelo LR guardado en proyect-package/dsr/lr_model.pkl")
 
 
 
