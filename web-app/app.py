@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 
 # Añadir el paquete del proyecto al path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'proyect-package'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from dsr import Dsr
 
 # ── Configuración de página ──
