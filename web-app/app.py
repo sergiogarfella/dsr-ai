@@ -3,13 +3,15 @@ DSR-AI — Interfaz de Análisis de Sentimiento en Reseñas
 Proyecto de la UPV
 """
 
-import streamlit as st
-import sys
 import os
+import sys
 from datetime import datetime
 
-# Añadir el paquete del proyecto al path
+import streamlit as st
+
+# Añadir el paquete principal al path para poder importar dsr
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
 from dsr import Dsr
 from utils import load_css
 
@@ -79,12 +81,11 @@ def ejecutar_analisis(resena, modelo_nombre):
         prob_neg = probabilidades[0][0] * 100
         confianza = prob_pos if es_positivo else prob_neg
         sentimiento = "POSITIVO" if es_positivo else "NEGATIVO"
-        emoji = "😊" if es_positivo else "😞"
 
         if es_positivo:
-            st.success(f"**{emoji} Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
+            st.success(f"**Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
         else:
-            st.error(f"**{emoji} Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
+            st.error(f"**Sentimiento {sentimiento}** — Confianza: {confianza:.1f}%")
 
         st.progress(float(confianza / 100))
         st.caption(f"Positivo: {prob_pos:.1f}%  |  Negativo: {prob_neg:.1f}%")
@@ -132,8 +133,7 @@ def mostrar_historial():
     c3.metric("Negativas", total - positivas)
 
     for r in historial:
-        emoji_hist = "😊" if r["sentimiento"] == "POSITIVO" else "😞"
-        with st.expander(f'{emoji_hist} {r["sentimiento"]} — {r["confianza"]:.1f}% — {r["timestamp"]}'):
+        with st.expander(f'{r["sentimiento"]} — {r["confianza"]:.1f}% — {r["timestamp"]}'):
             st.write(r["texto"])
             st.caption(f'Modelo: **{r["modelo"]}** |  +{r["prob_positivo"]:.1f}%  /  -{r["prob_negativo"]:.1f}%')
 

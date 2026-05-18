@@ -1,7 +1,7 @@
-import streamlit as st
-import os
 import base64
+import os
 
+import streamlit as st
 def load_css(base_dir):
     """
     Carga el archivo CSS externo y codifica el fondo en base64 para inyectarlo 

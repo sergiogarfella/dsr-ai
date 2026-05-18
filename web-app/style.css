@@ -17,8 +17,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
 /* Tipografía general premium */
-html, body, [class*="css"], * {
+html, body, [class*="css"] {
     font-family: 'Inter', sans-serif !important;
+}
+
+/* Evitar sobreescribir los iconos internos de Streamlit (como las flechas de los expanders) */
+.material-symbols-rounded,
+[data-testid="stIconMaterial"],
+i, span[class*="icon"] {
+    font-family: 'Material Symbols Rounded', 'Material Icons' !important;
 }
 
 /* Contenedor principal centrado */
@@ -164,8 +171,15 @@ div.stError {
 }
 
 /* HISTORIAL Y EXPANDERS */
-.stExpander {
+.stExpander, div[data-testid="stExpander"] {
     margin-bottom: 10px;
+    overflow: hidden !important;
+    border-radius: 16px !important;
+}
+
+div[data-testid="stExpander"] details {
+    border: none !important;
+    background: transparent !important;
 }
 
 button[data-baseweb="accordion-trigger"] {
