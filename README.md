@@ -128,7 +128,7 @@ El pipeline completo se encuentra en `src/` y sigue estos pasos:
 
 <div align="center">
 
-Proyecto desarrollado para la asignatura **Proyecto I : Introducción a la IA**
+Proyecto desarrollado para la asignatura **Proyecto I: Introducción a la IA**
 
 **Universitat Politècnica de València (UPV)**
 
