@@ -1,0 +1,42 @@
+---
+title: "Correción análisis de supuestos"
+author: "Jairo"
+date: "2026-05-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readr)
+library(dplyr)
+library(stringr)
+library(GGally)
+dataset_unificado_corregido <- read_csv("C:/Users/Jairo/Downloads/dataset_unificado_corregido.csv")
+
+```
+
+```{r}
+dataset_unificado_corregido <- dataset_unificado_corregido %>%
+  mutate(
+    N_Caracteres = nchar(texto),
+    Longitud_Reseñas = str_count(texto, "\\S+"), 
+    Vocabulario = sapply(str_extract_all(tolower(texto), "\\b[a-z]+\\b"), function(x) length(unique(x)))
+  )
+
+grafico_linealidad <- ggpairs(
+  dataset_unificado_corregido[, c("N_Caracteres", "Longitud_Reseñas", "Vocabulario")],
+  title = "Evaluación de Linealidad entre Variables Numéricas",
+  lower = list(continuous = wrap("points", alpha = 0.3, size=0.5, color="steelblue")),
+  diag = list(continuous = wrap("densityDiag", fill="lightblue"))
+)
+
+print(grafico_linealidad)
+```
+
+
+La diagonal principal nos muestra las gráficas de densidad, las cuales confirman visualmente la ausencia de normalidad mencionada anteriormente.
+
+Los coeficientes de correlación de Pearson nos muestran que hay una relación lineal positiva extremadamente fuerte entre las variables, lo cual indica que tenemos una alta multicolinealidad.
+
+Finalmente, los diagramas de dispersión muestran una buena linealidad en general. Aunque las interacciones con la variable Vocabulario muestran una ligera forma de embudo, lo que nos indica que hay un poco de heterocedasticidad.
+
+
