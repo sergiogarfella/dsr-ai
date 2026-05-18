@@ -1,0 +1,27 @@
+---
+title: "Corrección Detección de Valores Atípicos (Outliers)"
+author: "Jairo"
+date: "2026-05-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readr)
+library(dplyr)
+library(stringr)
+dataset_unificado_corregido <- read_csv("C:/Users/Jairo/Downloads/dataset_unificado_corregido.csv")
+
+dataset_unificado_corregido <- dataset_unificado_corregido %>%
+  mutate(
+    N_Caracteres = nchar(texto),
+    Longitud_Reseñas = str_count(texto, "\\S+"), 
+    Vocabulario = sapply(str_extract_all(tolower(texto), "\\b[a-z]+\\b"), function(x) length(unique(x)))
+  )
+
+```
+
+```{r}
+modelo <- lm(N_Caracteres ~ Vocabulario, data = dataset_unificado_corregido)
+plot(modelo, which = 5)
+```
+Observando la gráfica, vemos que nuestro modelo es estable debido a que no tiene valores atípicos influyentes. Esto se confirma ya que ningún punto supera las líneas que marcan la distancia de Cook.
