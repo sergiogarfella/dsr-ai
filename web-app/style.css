@@ -16,8 +16,8 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-/* Tipografía general premium */
-html, body, [class*="css"] {
+/* Tipografía general premium (forzamos a casi todos los elementos, omitiendo iconos) */
+*:not(.material-symbols-rounded):not([data-testid="stIconMaterial"]):not(i):not(svg):not(span[class*="icon"]) {
     font-family: 'Inter', sans-serif !important;
 }
 

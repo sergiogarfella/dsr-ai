@@ -44,10 +44,10 @@ def mostrar_cabecera():
     """, unsafe_allow_html=True)
     
     if not st.session_state.historial:
-        st.markdown("<div style='text-align:center; font-size:2.2em; font-weight:700; margin-bottom:0.5rem; margin-top:-1rem;'>Bienvenido</div>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align:center; color:#9aa0a6; font-size:18px; margin-top:0;'>¿Qué reseña vamos a analizar hoy?</p>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align:center; font-size:2.8em; font-weight:700; margin-bottom:0.5rem; margin-top:-1rem;'>Bienvenido</div>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align:center; color:#9aa0a6; font-size:18px; margin-top:0; margin-bottom: 2.5rem;'>¿Qué reseña vamos a analizar hoy?</p>", unsafe_allow_html=True)
     else:
-        st.markdown("<div style='text-align:center; font-size:1.8em; font-weight:700; margin-bottom:2rem; margin-top:-1rem;'>DSR-AI</div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align:center; font-size:2.4em; font-weight:700; margin-bottom:3rem; margin-top:-1rem;'>DSR-AI</div>", unsafe_allow_html=True)
 
 def mostrar_formulario():
     """Muestra la caja de texto, el selector de modelos y el botón. Retorna los inputs."""
