@@ -1,8 +1,6 @@
 <div align="center">
 
-# DSR-AI
-
-### Sistema de Detección de Sentimiento en Reseñas
+# Sistema de Detección de Sentimiento en Reseñas de Usuarios (DSR-AI)
 
 <br/>
 
