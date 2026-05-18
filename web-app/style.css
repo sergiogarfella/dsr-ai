@@ -5,7 +5,9 @@
 }
 
 /* Ocultar elementos nativos de Streamlit */
-#MainMenu, footer, header {
+#MainMenu,
+footer,
+header {
     visibility: hidden;
 }
 
@@ -16,15 +18,16 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
-/* Tipografía general premium (forzamos a casi todos los elementos, omitiendo iconos) */
+/* Tipografía general */
 *:not(.material-symbols-rounded):not([data-testid="stIconMaterial"]):not(i):not(svg):not(span[class*="icon"]) {
     font-family: 'Inter', sans-serif !important;
 }
 
-/* Evitar sobreescribir los iconos internos de Streamlit (como las flechas de los expanders) */
+/* Evitar sobreescribir los iconos internos de Streamlit*/
 .material-symbols-rounded,
 [data-testid="stIconMaterial"],
-i, span[class*="icon"] {
+i,
+span[class*="icon"] {
     font-family: 'Material Symbols Rounded', 'Material Icons' !important;
 }
 
@@ -36,15 +39,15 @@ i, span[class*="icon"] {
 }
 
 /* =========================================================================
-   COMPONENTES CON EFECTO GLASSMORPHISM (CRISTAL ESMERILADO)
+   COMPONENTES CON EFECTO TRANSPARENCIAS
    ========================================================================= */
 div[data-testid="stTextArea"],
 .stSelectbox div[data-baseweb="select"],
 .stButton>button[kind="secondary"],
-div.stSuccess, 
+div.stSuccess,
 div.stError,
 .stExpander,
-.stSegmentedControl > div {
+.stSegmentedControl>div {
     background-color: rgba(30, 31, 32, 0.45) !important;
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
@@ -68,7 +71,9 @@ div[data-testid="stTextArea"] textarea {
     color: #e3e3e3 !important;
     font-size: 16px;
 }
-div[data-baseweb="textarea"], div[data-baseweb="base-input"] {
+
+div[data-baseweb="textarea"],
+div[data-baseweb="base-input"] {
     background-color: transparent !important;
     border: none !important;
 }
@@ -81,6 +86,7 @@ div[data-testid="stTextArea"] textarea::placeholder {
 div[data-testid="stSelectbox"] {
     margin-bottom: 0px !important;
 }
+
 div[data-testid="stSelectbox"] label {
     display: none;
 }
@@ -89,7 +95,8 @@ div[data-testid="stSelectbox"] label {
     overflow: hidden !important;
     color: #e3e3e3 !important;
 }
-.stSelectbox div[data-baseweb="select"] > div {
+
+.stSelectbox div[data-baseweb="select"]>div {
     background-color: transparent !important;
     border-radius: 16px !important;
 }
@@ -123,7 +130,8 @@ li[role="option"] {
     color: #e3e3e3 !important;
 }
 
-li[role="option"]:hover, li[role="option"][aria-selected="true"] {
+li[role="option"]:hover,
+li[role="option"][aria-selected="true"] {
     background-color: rgba(129, 140, 248, 0.3) !important;
 }
 
@@ -152,7 +160,8 @@ svg[width="12"] {
 }
 
 /* RESULTADOS */
-div.stSuccess, div.stError {
+div.stSuccess,
+div.stError {
     padding: 1.2rem;
 }
 
@@ -171,7 +180,8 @@ div.stError {
 }
 
 /* HISTORIAL Y EXPANDERS */
-.stExpander, div[data-testid="stExpander"] {
+.stExpander,
+div[data-testid="stExpander"] {
     margin-bottom: 10px;
     overflow: hidden !important;
     border-radius: 16px !important;
