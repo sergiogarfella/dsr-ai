@@ -1,0 +1,237 @@
+/* Fondo principal oscuro */
+.stApp {
+    background-color: #131314;
+    color: #e3e3e3;
+}
+
+/* Ocultar elementos nativos de Streamlit */
+#MainMenu,
+footer,
+header {
+    visibility: hidden;
+}
+
+.stApp>header {
+    background-color: rgba(19, 19, 20, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+/* Tipografía general */
+*:not(.material-symbols-rounded):not([data-testid="stIconMaterial"]):not(i):not(svg):not(span[class*="icon"]) {
+    font-family: 'Inter', sans-serif !important;
+}
+
+/* Evitar sobreescribir los iconos internos de Streamlit*/
+.material-symbols-rounded,
+[data-testid="stIconMaterial"],
+i,
+span[class*="icon"] {
+    font-family: 'Material Symbols Rounded', 'Material Icons' !important;
+}
+
+/* Contenedor principal centrado */
+.main .block-container {
+    max-width: 750px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* =========================================================================
+   COMPONENTES CON EFECTO TRANSPARENCIAS
+   ========================================================================= */
+div[data-testid="stTextArea"],
+.stSelectbox div[data-baseweb="select"],
+.stButton>button[kind="secondary"],
+div.stSuccess,
+div.stError,
+.stExpander,
+.stSegmentedControl>div {
+    background-color: rgba(30, 31, 32, 0.45) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+}
+
+/* EL RECUADRO DE TEXTO */
+div[data-testid="stTextArea"] {
+    padding: 15px 20px !important;
+    transition: all 0.2s ease;
+}
+
+div[data-testid="stTextArea"]:focus-within {
+    border-color: #818cf8 !important;
+    box-shadow: 0 0 0 1px #818cf8;
+}
+
+div[data-testid="stTextArea"] textarea {
+    background-color: transparent !important;
+    color: #e3e3e3 !important;
+    font-size: 16px;
+}
+
+div[data-baseweb="textarea"],
+div[data-baseweb="base-input"] {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+div[data-testid="stTextArea"] textarea::placeholder {
+    color: #9aa0a6 !important;
+}
+
+/* SELECTOR DE MODELO */
+div[data-testid="stSelectbox"] {
+    margin-bottom: 0px !important;
+}
+
+div[data-testid="stSelectbox"] label {
+    display: none;
+}
+
+.stSelectbox div[data-baseweb="select"] {
+    overflow: hidden !important;
+    color: #e3e3e3 !important;
+}
+
+.stSelectbox div[data-baseweb="select"]>div {
+    background-color: transparent !important;
+    border-radius: 16px !important;
+}
+
+.stSelectbox span[data-baseweb="tag"] {
+    background-color: transparent !important;
+    color: #e3e3e3 !important;
+    font-weight: normal;
+    white-space: normal;
+}
+
+/* Ventana flotante del selector de modelos */
+[data-baseweb="popover"] {
+    background-color: rgba(30, 31, 32, 0.45) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+}
+
+[data-baseweb="popover"] * {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+li[role="option"] {
+    padding: 5px 12px !important;
+    color: #e3e3e3 !important;
+}
+
+li[role="option"]:hover,
+li[role="option"][aria-selected="true"] {
+    background-color: rgba(129, 140, 248, 0.3) !important;
+}
+
+svg[width="12"] {
+    fill: #9aa0a6;
+}
+
+/* BOTÓN DE ANALIZAR */
+.stButton>button[kind="secondary"] {
+    background-color: rgba(79, 70, 229, 0.5) !important;
+    border-color: rgba(129, 140, 248, 0.3) !important;
+    color: #ffffff;
+    padding: 8px 25px;
+    transition: all 0.2s ease;
+}
+
+.stButton>button[kind="secondary"] p {
+    font-weight: 700 !important;
+}
+
+.stButton>button[kind="secondary"]:hover {
+    background-color: rgba(99, 102, 241, 0.7) !important;
+    border-color: rgba(129, 140, 248, 0.6) !important;
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+/* RESULTADOS */
+div.stSuccess,
+div.stError {
+    padding: 1.2rem;
+}
+
+div.stSuccess {
+    border-left: 4px solid #34a853 !important;
+}
+
+div.stError {
+    border-left: 4px solid #ea4335 !important;
+}
+
+/* BARRA DE PROGRESO */
+.stProgress>div>div>div {
+    background-color: #818cf8;
+    border-radius: 16px;
+}
+
+/* HISTORIAL Y EXPANDERS */
+.stExpander,
+div[data-testid="stExpander"] {
+    margin-bottom: 10px;
+    overflow: hidden !important;
+    border-radius: 16px !important;
+}
+
+div[data-testid="stExpander"] details {
+    border: none !important;
+    background: transparent !important;
+}
+
+button[data-baseweb="accordion-trigger"] {
+    color: #e3e3e3 !important;
+    font-size: 15px;
+}
+
+.stSegmentedControl button {
+    color: #9aa0a6;
+    border-radius: 14px;
+}
+
+.stSegmentedControl button[aria-pressed="true"] {
+    background-color: #818cf8;
+    color: #202124;
+}
+
+div[data-testid="stMetricValue"] {
+    color: #e3e3e3;
+}
+
+div[data-testid="stMetricLabel"] {
+    color: #9aa0a6;
+}
+
+hr {
+    border-color: #3c4043;
+    margin: 2rem 0;
+}
+
+/* Enlaces */
+a {
+    color: #818cf8 !important;
+    text-decoration: none;
+}
+
+/* PIE DE PÁGINA */
+.footer {
+    text-align: center;
+    color: #9aa0a6;
+    font-size: 14px;
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #3c4043;
+}
